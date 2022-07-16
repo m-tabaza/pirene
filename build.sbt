@@ -12,5 +12,6 @@ libraryDependencies ++= Seq(
   "io.higherkindness" %% "droste-core" % "0.9.0",
   "io.circe" %% "circe-core" % "0.14.2",
   "org.typelevel" %% "kittens" % "3.0.0-M4",
+  "eu.timepit" %% "refined-cats" % "0.10.1",
   "org.scalameta" %% "munit" % "0.7.29" % Test
 )

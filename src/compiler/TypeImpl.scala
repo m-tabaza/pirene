@@ -1,19 +1,26 @@
 package pirene.compiler
 
-import scala.quoted.*
-import pirene.ast.TypeAlgebra
-import cats.data.OneAnd
-import cats.data.NonEmptyList
 import cats.Eval
+import cats.data.NonEmptyList
+import cats.data.OneAnd
+import eu.timepit.refined.api.Refined as R
+import eu.timepit.refined.collection.Size
+import eu.timepit.refined.numeric.Positive
+import pirene.ast.TypeAlgebra
+import pirene.ast.TypeAlgebra.*
 
-class TypeImpl[F[_]](using val quotes: Quotes) extends TypeAlgebra[F] {
+import scala.quoted.*
+
+class TypeImpl(using val quotes: Quotes) extends TypeAlgebra {
   import quotes.reflect.*
 
   type Repr = TypeRepr
 
-  type Type[A] = quoted.Type[A]
+  type Type[A <: AnyKind] = quoted.Type[A]
 
-  override def repr[A](using Type[A]): Repr = TypeRepr.of[A]
+  type Bound = TypeBounds
+
+  override def repr[A <: AnyKind](using Type[A]): Repr = TypeRepr.of[A]
 
   override def equate(a: Repr, b: Repr): Boolean = a =:= b
 
@@ -41,5 +48,27 @@ class TypeImpl[F[_]](using val quotes: Quotes) extends TypeAlgebra[F] {
 
   override def union(elems: NonEmptyList[Repr]): Repr =
     elems.reduceLeft((acc, t) => OrType(t, acc))
+
+  override def function(in: Repr, out: Repr): Repr =
+    TypeRepr.of[Function].appliedTo(in :: out :: Nil)
+
+  override def applicable(t: Repr): Option[Repr R Applicable[Int R Positive]] =
+    t.dealias match {
+      case TypeLambda(params, _, _) => Some(R.unsafeApply(t))
+      case _                        => None
+    }
+
+  override def applied[N <: Int R Positive](
+      t: Repr R Applicable[N],
+      args: NonEmptyList[Repr] R Size[N]
+  ): Either[IncompatibleBoundsError[Repr, Bound], Repr] = t.value match {
+    case TypeLambda(_, bounds, _) =>
+      (bounds zip args.value.toList).zipWithIndex
+        .find { case ((bounds, arg), _) => !(arg <:< bounds) } match {
+        case Some(((unsatisfiedBound, badArg), index)) =>
+          Left(IncompatibleBoundsError(index, badArg, unsatisfiedBound))
+        case None => Right(t.value appliedTo args.value.toList)
+      }
+  }
 
 }
