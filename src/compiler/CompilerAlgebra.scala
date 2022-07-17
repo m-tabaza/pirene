@@ -8,8 +8,13 @@ trait CompilerAlgebra[F[_]] {
 
   type Decode[_]
 
-  def compile(ctx: Context, expr: Expr): F[Value]
+  type Encode[_]
 
-  def compileA[A](ctx: Context, expr: Expr)(using Decode[A]): F[A]
+  def compile(ctx: Context[F], expr: Expr): F[List[Value] => Value]
+
+  def compileStatic[A, B](ctx: Context[F], expr: Expr)(using
+      Encode[A],
+      Decode[B]
+  ): F[A => B]
 
 }

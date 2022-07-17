@@ -3,26 +3,22 @@ package pirene.ast
 import cats.syntax.all.*
 
 import pirene.util.PathIdent
+import pirene.compiler.CompilerAlgebra
 
-class Context(terms: Map[PathIdent, Expr], types: Map[PathIdent, Type]) {
+class Context[F[_]](val compiler: CompilerAlgebra[F])(
+    defs: Map[PathIdent, List[compiler.Value] => F[compiler.Value]]
+) {
 
-  opaque type ExistingTermIdent = PathIdent
-  opaque type ExistingTypeIdent = PathIdent
+  opaque final type DefIdent = PathIdent
 
-  def existingTermIdent(ident: PathIdent): Option[ExistingTermIdent] =
-    terms.get(ident).as(ident)
+  def defIdent(ident: PathIdent): Option[DefIdent] =
+    defs.get(ident).as(ident)
 
-  def existingTypeIdent(ident: PathIdent): Option[ExistingTypeIdent] =
-    types.get(ident).as(ident)
+  def getDef(ident: DefIdent) = defs(ident)
 
-  def getTerm(ident: ExistingTermIdent) = terms(ident)
-
-  def getType(ident: ExistingTypeIdent) = types(ident)
-
-  def addTerm(ident: PathIdent, term: Expr) =
-    Context(terms.updated(ident, term), types)
-
-  def addType(ident: PathIdent, typ: Type) =
-    Context(terms, types.updated(ident, typ))
+  def withDef(
+      ident: PathIdent,
+      value: List[compiler.Value] => F[compiler.Value]
+  ): Context[F] = Context(compiler)(defs.updated(ident, value))
 
 }
