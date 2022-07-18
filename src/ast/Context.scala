@@ -1,24 +1,27 @@
 package pirene.ast
 
-import cats.syntax.all.*
-
 import pirene.util.PathIdent
-import pirene.compiler.CompilerAlgebra
 
-class Context[F[_]](val compiler: CompilerAlgebra[F])(
-    defs: Map[PathIdent, List[compiler.Value] => F[compiler.Value]]
-) {
+class Context[F[_], Value](val defs: Map[PathIdent, List[Value] => F[Value]]) {
 
   opaque final type DefIdent = PathIdent
 
   def defIdent(ident: PathIdent): Option[DefIdent] =
-    defs.get(ident).as(ident)
+    defs.get(ident).map(_ => ident)
 
   def getDef(ident: DefIdent) = defs(ident)
 
   def withDef(
       ident: PathIdent,
-      value: List[compiler.Value] => F[compiler.Value]
-  ): Context[F] = Context(compiler)(defs.updated(ident, value))
+      value: List[Value] => F[Value]
+  ): Context[F, Value] = Context(defs.updated(ident, value))
+
+  def merge(that: Context[F, Value]): Context[F, Value] =
+    Context(defs ++ that.defs)
+
+}
+object Context {
+
+  def empty[F[_], Value]: Context[F, Value] = Context(Map.empty)
 
 }

@@ -10,11 +10,11 @@ trait CompilerAlgebra[F[_]] {
 
   type Encode[_]
 
-  def compile(ctx: Context[F], expr: Expr): F[List[Value] => Value]
+  def compile(ctx: Context[F, Value], expr: Expr): List[Value] => F[Value]
 
-  def compileStatic[A, B](ctx: Context[F], expr: Expr)(using
+  def compileStatic[A, B](ctx: Context[F, Value], expr: Expr)(using
       Encode[A],
       Decode[B]
-  ): F[A => B]
+  ): A => F[B]
 
 }

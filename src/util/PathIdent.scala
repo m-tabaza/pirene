@@ -1,13 +1,16 @@
 package pirene.util
 
-import cats.data.NonEmptyList
 import cats.Show
+import cats.data.NonEmptyList
 
 opaque type PathIdent = NonEmptyList[String]
 object PathIdent {
 
   def from(head: String, tail: String*): PathIdent =
     NonEmptyList(head, tail.toList)
+
+  def from(ident: Ident): PathIdent =
+    PathIdent.from(Ident.toString(ident))
 
   def from(path: NonEmptyList[String]): PathIdent = path
 
