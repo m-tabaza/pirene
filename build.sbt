@@ -9,6 +9,7 @@ scalacOptions ++= Seq("-Xmax-inlines", "60")
 libraryDependencies ++= Seq(
   "org.scala-lang" %% "scala3-staging" % scalaVersion.value,
   "org.typelevel" %% "cats-core" % "2.8.0",
+  "org.typelevel" %% "cats-mtl" % "1.3.0",
   "io.higherkindness" %% "droste-core" % "0.9.0",
   "io.circe" %% "circe-core" % "0.14.2",
   "org.typelevel" %% "kittens" % "3.0.0-M4",

@@ -1,4 +1,4 @@
-package pirene.ast
+package pirene.compiler
 
 import pirene.util.PathIdent
 
@@ -23,5 +23,9 @@ class Context[F[_], Value](val defs: Map[PathIdent, List[Value] => F[Value]]) {
 object Context {
 
   def empty[F[_], Value]: Context[F, Value] = Context(Map.empty)
+
+  def of[F[_], Value](
+      defs: (PathIdent, List[Value] => F[Value])*
+  ): Context[F, Value] = Context(defs.toMap)
 
 }

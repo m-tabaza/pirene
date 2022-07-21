@@ -1,8 +1,6 @@
 package pirene.ast
 
-import cats.Foldable
-import cats.Functor
-import cats.Traverse
+import cats.*
 import cats.derived.{semiauto => derived, _}
 import higherkindness.droste.data.Fix
 import pirene.util.Ident
@@ -12,6 +10,15 @@ type Expr = Fix[ExprF]
 object Expr {
 
   case class Param(ident: Ident, tpe: Type)
+
+  def const(c: Constant): Expr = Fix(ExprF.Const(c))
+
+  def bind(ident: Ident, term: Expr): Expr = Fix(ExprF.Bind(ident, term))
+
+  def ap(applied: Expr, args: List[Expr]): Expr =
+    Fix(ExprF.Apply(applied, args))
+
+  def ref(path: PathIdent): Expr = Fix(ExprF.Ref(path))
 
 }
 

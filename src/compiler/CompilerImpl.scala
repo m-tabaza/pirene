@@ -1,19 +1,16 @@
 package pirene.compiler
 
-import pirene.ast.Context
-
-import pirene.ast.Expr
-import io.circe.Json
-import io.circe.Decoder
-import higherkindness.droste.RAlgebra
-import pirene.ast.ExprF
-import io.circe.Encoder
+import cats.*
+import cats.mtl.*
 import cats.implicits.*
 import higherkindness.droste.Algebra
+import higherkindness.droste.scheme
+import io.circe.*
+import pirene.ast.*
 import pirene.util.PathIdent
-import cats.Monad
 
-class CompilerImpl[F[_]] extends CompilerAlgebra[F] {
+class CompilerImpl[F[_]](using Monad[F], Raise[F, CompileError])
+    extends CompilerAlgebra[F] {
 
   override type Value = Json
 
@@ -24,38 +21,42 @@ class CompilerImpl[F[_]] extends CompilerAlgebra[F] {
   override def compile(
       ctx: Context[F, Value],
       expr: Expr
-  ): List[Value] => F[Value] =
-    ???
+  ): ValueProgram = ???
+  // scheme.cata(CompilerImpl.generationAlgebra[F])
 
   override def compileStatic[A, B](ctx: Context[F, Value], expr: Expr)(using
       Encode[A],
       Decode[B]
-  ): A => F[B] =
-    ???
+  ): Program[A, B] = ???
 
 }
 object CompilerImpl {
 
-  def generationAlgebra[F[_]](prelude: Context[F, Json])(using Monad[F]) =
-    Algebra[ExprF, (Context[F, Json], List[Json] => F[Json])] {
-      case ExprF.Const(c: String) =>
-        (prelude, _ => Json.fromString((c)).pure)
-      case ExprF.Const(c: Long) =>
-        (prelude, _ => Json.fromLong((c)).pure)
-      case ExprF.Const(c: Boolean) =>
-        (prelude, _ => Json.fromBoolean((c)).pure)
-      case ExprF.Const(c: Double) =>
-        (prelude, _ => Json.fromDoubleOrNull(c).pure)
-      case ExprF.Const(c: Unit) =>
-        (prelude, _ => Json.obj().pure)
-      case ExprF.Bind(ident, (ctx, f)) =>
-        (ctx.withDef(PathIdent.from(ident), f), f)
-      case ExprF.Apply((appliedCtx, applied), args) =>
-        appliedCtx -> { _ =>
-          args.traverse { case (_, arg) => arg(Nil) }.flatMap(applied)
+  def constantToJson(c: Constant): Json = c match {
+    case c: String  => Json.fromString(c)
+    case c: Boolean => Json.fromBoolean(c)
+    case c: Long    => Json.fromLong(c)
+    case c: Double  => Json.fromDoubleOrNull(c)
+    case c: Unit    => Json.obj()
+  }
+
+  def generationAlgebra[F[_]](using F: Monad[F], FR: Raise[F, CompileError]) = {
+    type Ctx = Context[F, Json]
+
+    Algebra[[A] =>> (Ctx, ExprF[A]), List[Json] => F[Json]] {
+      case (_, ExprF.Const(c)) =>
+        _ => constantToJson(c).pure
+      case (_, ExprF.Bind(_, f)) => f
+      case (_, ExprF.Apply(applied, args)) =>
+        _ => args.traverse(arg => arg(Nil)).flatMap(applied)
+      case (_, ExprF.Lambda(_, out)) => out
+      case (ctx, ExprF.Ref(ref)) =>
+        Function.const {
+          ctx
+            .defIdent(ref)
+            .fold(FR.raise(CompileError.NotFoundValue(ref)))(ctx.getDef(_)(Nil))
         }
-      case ExprF.Lambda(params, out) => ???
-      case ExprF.Ref(_)              => ???
     }
+  }
 
 }
