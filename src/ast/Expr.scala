@@ -7,13 +7,15 @@ import pirene.util.Ident
 import pirene.util.PathIdent
 
 type Expr = Fix[ExprF]
+
 object Expr {
 
   case class Param(ident: Ident, tpe: Type)
 
   def const(c: Constant): Expr = Fix(ExprF.Const(c))
 
-  def bind(ident: Ident, term: Expr): Expr = Fix(ExprF.Bind(ident, term))
+  def bind(ident: Ident, term: Expr, in: Expr): Expr =
+    Fix(ExprF.Bind(ident, term, in))
 
   def ap(applied: Expr, args: List[Expr]): Expr =
     Fix(ExprF.Apply(applied, args))
@@ -24,7 +26,7 @@ object Expr {
 
 enum ExprF[A] {
   case Const(value: Constant)
-  case Bind(ident: Ident, term: A)
+  case Bind(ident: Ident, term: A, in: A)
   case Apply(applied: A, args: List[A])
   case Lambda(params: List[Expr.Param], body: A)
   case Ref(ref: PathIdent)

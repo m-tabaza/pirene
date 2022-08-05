@@ -1,18 +1,19 @@
 package pirene.compiler
 
-import cats.Monad
+import cats.*
 import cats.data.EitherT
 import cats.implicits.*
 import cats.mtl.Handle
 import cats.mtl.implicits.*
+import higherkindness.droste.*
 import io.circe.Json
-import pirene.ast.Expr
-import pirene.util.PathIdent
+import pirene.ast.*
+import pirene.util.*
 
 class CompilerImplTest extends munit.FunSuite {
 
   def dummyPrelude[F[_]](using F: Monad[F], RunErr: Handle[F, Throwable]) =
-    Context.of[F, Json](
+    Context.of[List[Json] => F[Json]](
       PathIdent.from("hello") -> { _ =>
         Json.fromString("Hello").pure
       },
@@ -32,19 +33,17 @@ class CompilerImplTest extends munit.FunSuite {
       }
     )
 
-  type ErrorOr[A] = EitherT[[X] =>> Either[Throwable, X], CompileError, A]
+  // val defaultCtx = dummyPrelude[ErrorOr]
 
-  val defaultCtx = dummyPrelude[ErrorOr]
+  // val compiler = CompilerImpl[ErrorOr]
 
-  val compiler = CompilerImpl[ErrorOr]
+  // test("Constant program should be generated correctly") {
 
-  test("Constant program should be generated correctly") {
+  //   /** TODO: In order to compile, there must be a function that turns Exprs
+  //     * into Exprs with Contexts
+  //     */
+  //   val one = Expr.const(1L)
 
-    /** TODO: In order to compile, there must be a function that turns Exprs
-      * into Exprs with Contexts
-      */
-    val one = Expr.const(1L)
-
-  }
+  // }
 
 }

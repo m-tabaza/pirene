@@ -23,7 +23,7 @@ private def debugCode[A: Type](a: Expr[A])(using Quotes): Expr[A] = {
   '{
     val aVal = $a
     println(
-      s"${$name} - (${compiletime.codeOf($a)}) : ${$tpe} = $aVal @ ${$posStr}"
+      s"${$name} - (${compiletime.codeOf($a)}) : ${$tpe} = ${pprint.tokenize(aVal).mkString} @ ${$posStr}"
     )
     aVal
   }

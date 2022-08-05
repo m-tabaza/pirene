@@ -2,30 +2,26 @@ package pirene.compiler
 
 import pirene.util.PathIdent
 
-class Context[F[_], Value](val defs: Map[PathIdent, List[Value] => F[Value]]) {
+opaque type Context[A] = Map[PathIdent, A]
 
-  opaque final type DefIdent = PathIdent
+opaque type DefIdent[Ctx] = PathIdent
 
-  def defIdent(ident: PathIdent): Option[DefIdent] =
-    defs.get(ident).map(_ => ident)
-
-  def getDef(ident: DefIdent) = defs(ident)
-
-  def withDef(
-      ident: PathIdent,
-      value: List[Value] => F[Value]
-  ): Context[F, Value] = Context(defs.updated(ident, value))
-
-  def merge(that: Context[F, Value]): Context[F, Value] =
-    Context(defs ++ that.defs)
-
-}
 object Context {
 
-  def empty[F[_], Value]: Context[F, Value] = Context(Map.empty)
+  def defIdent[A](
+      ctx: Context[A],
+      ident: PathIdent
+  ): Option[DefIdent[ctx.type]] = ctx.get(ident).map(_ => ident)
 
-  def of[F[_], Value](
-      defs: (PathIdent, List[Value] => F[Value])*
-  ): Context[F, Value] = Context(defs.toMap)
+  def getDef[A](ctx: Context[A])(ident: DefIdent[ctx.type]) = ctx(ident)
+
+  def withDef[A](ctx: Context[A], ident: PathIdent, value: A): Context[A] =
+    ctx.updated(ident, value)
+
+  def merge[A](a: Context[A], b: Context[A]): Context[A] = a ++ b
+
+  def empty[A]: Context[A] = Map.empty
+
+  def of[A](defs: (PathIdent, A)*): Context[A] = defs.toMap
 
 }
