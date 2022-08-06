@@ -13,29 +13,20 @@ class CompilerImpl[F[_]](using MonadError[F, CompileError])
 
   override type Value = Json
 
-  override type ValueProgram = CompilerImpl.ValueProgram[F]
-
-  override type Decode[V] = Decoder[V]
-
-  override type Encode[V] = Encoder[V]
-
   override def compile(ctx: Context[ValueProgram], expr: Expr): ValueProgram =
-    scheme.cata(CompilerImpl.compileAlg[F]).apply(expr)(ctx)
-
-  override def compileStatic[A, B](ctx: Context[ValueProgram], expr: Expr)(using
-      Encode[A],
-      Decode[B]
-  ): Program[A, B] = ???
+    CompilerImpl.compile(ctx, expr)
 
 }
 object CompilerImpl {
 
   type ValueProgram[F[_]] = List[Json] => F[Json]
 
-  type Runtime[F[_]] = Context[ValueProgram[F]] => ValueProgram[F]
+  def compile[F[_]](ctx: Context[ValueProgram[F]], expr: Expr)(using
+      F: MonadError[F, CompileError]
+  ): ValueProgram[F] = scheme.cata(CompilerImpl.compileAlg[F]).apply(expr)(ctx)
 
   def compileAlg[F[_]](using F: MonadError[F, CompileError]) =
-    Algebra[ExprF, Runtime[F]] {
+    Algebra[ExprF, Context[ValueProgram[F]] => ValueProgram[F]] {
       case ExprF.Const(c) => _ => _ => Constant.asJson(c).pure
       case ExprF.Bind(ident, term, in) =>
         ctx => in(Context.withDef(ctx, PathIdent.from(ident), term(ctx)))

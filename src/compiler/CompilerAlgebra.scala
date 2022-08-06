@@ -10,15 +10,6 @@ trait CompilerAlgebra[F[_]] {
 
   type ValueProgram = Program[Value, Value]
 
-  type Decode[_]
-
-  type Encode[_]
-
   def compile(ctx: Context[ValueProgram], expr: Expr): ValueProgram
-
-  def compileStatic[A, B](ctx: Context[ValueProgram], expr: Expr)(using
-      Encode[A],
-      Decode[B]
-  ): Program[A, B]
 
 }

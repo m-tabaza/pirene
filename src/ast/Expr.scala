@@ -22,6 +22,9 @@ object Expr {
 
   def ref(path: PathIdent): Expr = Fix(ExprF.Ref(path))
 
+  def lambda(body: Expr, params: Expr.Param*): Expr =
+    Fix(ExprF.Lambda(params.toList, body))
+
 }
 
 enum ExprF[A] {
