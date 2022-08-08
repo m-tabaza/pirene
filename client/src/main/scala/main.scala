@@ -1,7 +1,8 @@
 package pirene.client
 
-import pirene.compiler.*
+import japgolly.scalajs.react.vdom.html_<^.*
+import org.scalajs.dom.document
 
-@main def main = println("Hello from Pirene JS")
+val App = <.h1(<.i("Hello"))
 
-val comp = CompilerImpl
+@main def main = App.renderIntoDOM(document.body)

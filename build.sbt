@@ -20,12 +20,18 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     )
   )
 
-lazy val client = crossProject(JSPlatform)
-  .crossType(CrossType.Pure)
-  .in(file("client"))
+lazy val client = project
   .settings(
     moduleName := "pirene-client",
     name := "Pirene Client",
-    scalaJSUseMainModuleInitializer := true
+    scalaJSUseMainModuleInitializer := true,
+    libraryDependencies ++= Seq(
+      "com.github.japgolly.scalajs-react" %%% "core" % "2.1.1"
+    ),
+    Compile / npmDependencies ++= Seq(
+      "react" -> "17.0.2",
+      "react-dom" -> "17.0.2"
+    )
   )
-  .dependsOn(core)
+  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+  .dependsOn(core.js)
