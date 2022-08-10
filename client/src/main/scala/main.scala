@@ -5,4 +5,4 @@ import org.scalajs.dom.document
 
 val App = <.h1(<.i("Hello"))
 
-@main def main = App.renderIntoDOM(document.body)
+@main def main = App.renderIntoDOM(document.getElementById("root"))

@@ -20,13 +20,16 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     )
   )
 
+// Example React setup: https://github.com/shashkovdanil/scalajs-react-boilerplate
 lazy val client = project
   .settings(
     moduleName := "pirene-client",
     name := "Pirene Client",
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      "com.github.japgolly.scalajs-react" %%% "core" % "2.1.1"
+      "com.github.japgolly.scalajs-react" %%% "core" % "2.1.1",
+      "com.github.japgolly.scalacss" %%% "core" % "1.0.0",
+      "com.github.japgolly.scalacss" %%% "ext-react" % "1.0.0"
     ),
     Compile / npmDependencies ++= Seq(
       "react" -> "17.0.2",
