@@ -24,8 +24,6 @@ object Type {
 
   val bool: Type = Fix(TypeF.Boolean())
 
-  def list(a: Type): Type = Fix(TypeF.List(a))
-
   def function(in: Type, out: Type): Type =
     Fix(TypeF.Function(in, out))
 
@@ -72,9 +70,6 @@ enum TypeF[A] {
 
   /** `Boolean` */
   case Boolean()
-
-  /** Vector[A] */
-  case List(param: A)
 
   /** `(String, Int, ...)` */
   case Product(members: OneAnd[NonEmptyList, A])

@@ -4,6 +4,7 @@ import cats.*
 import cats.data.EitherT
 import cats.implicits.*
 import io.circe.Json
+import io.circe.syntax.*
 import pirene.ast.*
 import pirene.util.*
 
@@ -37,7 +38,7 @@ class CompilerImplTest extends munit.FunSuite {
       .map(_.recover(_ => err))
 
   test("Constant program generation") {
-    val one = Expr.const(1L)
+    val one = Expr.const(1L.asJson)
 
     val program = CompilerImpl.compile(dummyPrelude[ErrorOr], one)
 
@@ -47,7 +48,7 @@ class CompilerImplTest extends munit.FunSuite {
   test("Referenced function application generation") {
     val app = Expr.ap(
       applied = Expr.ref(PathIdent.from("add")),
-      args = List(Expr.const(2L), Expr.const(3L))
+      args = List(Expr.const(2L.asJson), Expr.const(3L.asJson))
     )
 
     val program = CompilerImpl.compile(dummyPrelude[ErrorOr], app)
@@ -62,8 +63,8 @@ class CompilerImplTest extends munit.FunSuite {
         args =
           List(Expr.ref(PathIdent.from("x")), Expr.ref(PathIdent.from("y")))
       ),
-      Expr.Param(Ident.from("x"), Type.int),
-      Expr.Param(Ident.from("y"), Type.int)
+      Ident.from("x"),
+      Ident.from("y")
     )
 
     val program = CompilerImpl.compile(dummyPrelude[ErrorOr], lambda)
@@ -76,10 +77,10 @@ class CompilerImplTest extends munit.FunSuite {
   test("Bindings generation") {
     val bind = Expr.bind(
       ident = Ident.from("x"),
-      term = Expr.const(1L),
+      term = Expr.const(1L.asJson),
       in = Expr.bind(
         ident = Ident.from("y"),
-        term = Expr.const(2L),
+        term = Expr.const(2L.asJson),
         in = Expr.ap(
           applied = Expr.ref(PathIdent.from("add")),
           args =

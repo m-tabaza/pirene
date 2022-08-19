@@ -27,7 +27,7 @@ object CompilerImpl {
 
   def compileAlg[F[_]](using F: MonadError[F, CompileError]) =
     Algebra[ExprF, Context[ValueProgram[F]] => ValueProgram[F]] {
-      case ExprF.Const(c) => _ => _ => Constant.asJson(c).pure
+      case ExprF.Const(c) => _ => _ => c.pure
       case ExprF.Bind(ident, term, in) =>
         ctx => in(Context.withDef(ctx, PathIdent.from(ident), term(ctx)))
       case ExprF.Apply(applied, args) =>
@@ -45,7 +45,7 @@ object CompilerImpl {
           val innerCtx =
             params.zip(args).foldLeft(ctx) { case (accCtx, (param, value)) =>
               Context
-                .withDef(accCtx, PathIdent.from(param.ident), _ => value.pure)
+                .withDef(accCtx, PathIdent.from(param), _ => value.pure)
             }
 
           expr(innerCtx)(args)
