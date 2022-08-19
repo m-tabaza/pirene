@@ -1,8 +1,11 @@
 package pirene.client
 
-import japgolly.scalajs.react.vdom.html_<^.*
 import org.scalajs.dom.document
+import slinky.core.*
+import slinky.web.ReactDOM
+import slinky.web.html.*
 
-val App = <.h1(<.i("Hello"))
-
-@main def main = App.renderIntoDOM(document.getElementById("root"))
+@main def main = ReactDOM.render(
+  h1("Welcome to Pirene!"),
+  document.getElementById("root")
+)

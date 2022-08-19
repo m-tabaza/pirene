@@ -20,21 +20,43 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     )
   )
 
-// Example React setup: https://github.com/shashkovdanil/scalajs-react-boilerplate
 lazy val client = project
   .settings(
     moduleName := "pirene-client",
     name := "Pirene Client",
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      "com.github.japgolly.scalajs-react" %%% "core" % "2.1.1",
-      "com.github.japgolly.scalacss" %%% "core" % "1.0.0",
-      "com.github.japgolly.scalacss" %%% "ext-react" % "1.0.0"
+      "me.shadaj" %%% "slinky-web" % "0.7.2",
+      "me.shadaj" %%% "slinky-hot" % "0.7.2"
     ),
     Compile / npmDependencies ++= Seq(
-      "react" -> "17.0.2",
-      "react-dom" -> "17.0.2"
-    )
+      "react" -> "16.13.1",
+      "react-dom" -> "16.13.1",
+      "react-proxy" -> "1.1.8",
+      "file-loader" -> "6.2.0",
+      "style-loader" -> "2.0.0",
+      "css-loader" -> "5.2.6",
+      "html-webpack-plugin" -> "4.5.1",
+      "copy-webpack-plugin" -> "6.4.0",
+      "webpack-merge" -> "5.8.0"
+    ),
+    webpack / version := "4.44.2",
+    startWebpackDevServer / version := "3.11.2",
+    webpackResources := baseDirectory.value / "webpack" * "*",
+    fastOptJS / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-fastopt.config.js"
+    ),
+    fullOptJS / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-opt.config.js"
+    ),
+    Test / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-core.config.js"
+    ),
+    fastOptJS / webpackDevServerExtraArgs := Seq("--inline", "--hot"),
+    fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
+    Test / requireJsDomEnv := true,
+    addCommandAlias("dev", ";fastOptJS/startWebpackDevServer;~fastOptJS"),
+    addCommandAlias("build", "fullOptJS/webpack")
   )
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .dependsOn(core.js)
