@@ -30,14 +30,14 @@ lazy val client = project
       "me.shadaj" %%% "slinky-hot" % "0.7.2"
     ),
     Compile / npmDependencies ++= Seq(
-      "react" -> "16.13.1",
-      "react-dom" -> "16.13.1",
+      "react" -> "17.0.2",
+      "react-dom" -> "17.0.2",
       "react-proxy" -> "1.1.8",
       "file-loader" -> "6.2.0",
       "style-loader" -> "2.0.0",
-      "css-loader" -> "5.2.6",
-      "html-webpack-plugin" -> "4.5.1",
-      "copy-webpack-plugin" -> "6.4.0",
+      "css-loader" -> "5.2.7",
+      "html-webpack-plugin" -> "4.5.2",
+      "copy-webpack-plugin" -> "6.4.1",
       "webpack-merge" -> "5.8.0"
     ),
     webpack / version := "4.44.2",
