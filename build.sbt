@@ -27,7 +27,9 @@ lazy val prelude = crossProject(JVMPlatform, JSPlatform)
   .settings(
     moduleName := "pirene-prelude",
     name := "Pirene Prelude",
-    libraryDependencies ++= Seq()
+    libraryDependencies ++= Seq(
+      "org.http4s" %% "http4s-core" % "0.23.14"
+    )
   )
 
 lazy val client = project
