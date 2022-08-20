@@ -46,8 +46,17 @@ object Type {
   def coproduct(head: Type, tail: Type*): Type =
     Fix(TypeF.Coproduct(NonEmptyList(head, tail.toList)))
 
+  def ap(applied: Type, args: NonEmptyList[Type]): Type =
+    Fix(TypeF.Apply(applied, args))
+
+  def ap(applied: Type, arg: Type, rest: Type*): Type =
+    ap(applied, NonEmptyList(arg, rest.toList))
+
   def lambda(body: Type, paramsHead: Param, paramsTail: Param*): Type =
     Fix(TypeF.Lambda(NonEmptyList(paramsHead, paramsTail.toList), body))
+
+  def ref(path: PathIdent): Type =
+    Fix(TypeF.Ref(path))
 
 }
 
@@ -84,10 +93,14 @@ enum TypeF[A] {
   case Function(in: A, out: A)
 
   /** `T[...args]` or `T` */
-  case Apply(applied: A, args: scala.List[A])
+  case Apply(applied: A, args: NonEmptyList[A])
 
   /** `[X] =>> F[X]` */
   case Lambda(in: NonEmptyList[Type.Param], out: A)
+
+  /** `Option`, `Array` */
+  case Ref(path: PathIdent)
+
 }
 object TypeF {
 
