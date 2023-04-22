@@ -2,6 +2,7 @@ package pirene.compiler
 
 import pirene.ast.Expr
 
+import pirene.ast.Expr
 trait CompilerAlgebra[F[_]] {
 
   type Value

@@ -6,6 +6,8 @@ import higherkindness.droste.data.Fix
 import pirene.util.Ident
 import pirene.util.PathIdent
 
+import pirene.util.Ident
+import pirene.util.PathIdent
 type Expr = Fix[ExprF]
 
 object Expr {

@@ -2,6 +2,7 @@ package pirene.compiler
 
 import pirene.util.PathIdent
 
+import pirene.util.PathIdent
 opaque type Context[A] = Map[PathIdent, A]
 
 opaque type DefIdent[Ctx] = PathIdent

@@ -1,3 +1,3 @@
-package perine
+package pirene
 
 @main def main = ()

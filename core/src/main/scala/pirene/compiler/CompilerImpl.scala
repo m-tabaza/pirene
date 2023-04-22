@@ -8,6 +8,8 @@ import io.circe.*
 import pirene.ast.*
 import pirene.util.*
 
+import pirene.util.PathIdent
+import pirene.ast.{Expr, ExprF}
 class CompilerImpl[F[_]](using MonadError[F, CompileError])
     extends CompilerAlgebra[F] {
 
