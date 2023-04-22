@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "3.1.3"
+ThisBuild / scalaVersion := "3.3.0-RC4"
 ThisBuild / scalacOptions ++= Seq("-Xmax-inlines", "60")
 ThisBuild / tlBaseVersion := "2.9"
 
