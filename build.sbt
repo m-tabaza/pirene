@@ -11,10 +11,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     moduleName := "pirene-core",
     name := "Pirene Core",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.8.0",
       "io.higherkindness" %%% "droste-core" % "0.9.0",
-      "io.circe" %%% "circe-core" % "0.14.2",
-      "org.typelevel" %%% "kittens" % "3.0.0-M4",
+      "io.circe" %%% "circe-core" % "0.14.5",
+      "org.typelevel" %%% "kittens" % "3.0.0",
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "com.lihaoyi" %%% "pprint" % "0.7.0" % Test
     )
