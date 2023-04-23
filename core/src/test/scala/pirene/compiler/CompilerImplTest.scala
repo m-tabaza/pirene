@@ -58,7 +58,7 @@ class CompilerImplTest extends munit.FunSuite {
   }
 
   test("Lambda application generation") {
-    val lambda = Expr.lambda[CompilerImpl.Value](
+    val lambda = Expr.lambda[Json](
       body = Expr.ap(
         applied = Expr.ref(PathIdent.from("add")),
         args =

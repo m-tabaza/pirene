@@ -4,17 +4,16 @@ import cats.*
 import cats.syntax.all.*
 import higherkindness.droste.Algebra
 import higherkindness.droste.scheme
-import io.circe.*
 import pirene.ast.*
 import pirene.util.*
 
 import pirene.util.PathIdent
 import pirene.ast.{Expr, ExprF}
 
-class CompilerImpl[F[_]](using MonadError[F, CompileError[CompilerImpl.Value]])
+class CompilerImpl[F[_], V](using MonadError[F, CompileError[V]])
     extends CompilerAlgebra[F] {
 
-  override type Value = CompilerImpl.Value
+  override type Value = V
 
   override def compile(
       ctx: Context[ValueProgram],
@@ -24,16 +23,18 @@ class CompilerImpl[F[_]](using MonadError[F, CompileError[CompilerImpl.Value]])
 }
 object CompilerImpl {
 
-  type Value = Json
+  type ValueProgram[F[_], Value] = List[Value] => F[Value]
 
-  type ValueProgram[F[_]] = List[Json] => F[Json]
-
-  def compile[F[_]](ctx: Context[ValueProgram[F]], expr: Expr[Json])(using
+  def compile[F[_], Value](
+      ctx: Context[ValueProgram[F, Value]],
+      expr: Expr[Value]
+  )(using
       F: MonadError[F, CompileError[Value]]
-  ): ValueProgram[F] = scheme.cata(CompilerImpl.compileAlg[F]).apply(expr)(ctx)
+  ): ValueProgram[F, Value] =
+    scheme.cata(CompilerImpl.compileAlg[F, Value]).apply(expr)(ctx)
 
-  def compileAlg[F[_]](using F: MonadError[F, CompileError[Value]]) = {
-    type Acc = Context[ValueProgram[F]] => ValueProgram[F]
+  def compileAlg[F[_], Value](using F: MonadError[F, CompileError[Value]]) = {
+    type Acc = Context[ValueProgram[F, Value]] => ValueProgram[F, Value]
 
     Algebra[[A] =>> ExprF[A, Value], Acc] {
       case ExprF.Const(c) => _ => _ => c.pure
