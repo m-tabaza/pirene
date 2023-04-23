@@ -28,7 +28,8 @@ class CompilerImplTest extends munit.FunSuite {
       }
     )
 
-  type ErrorOr[A] = EitherT[[X] =>> EitherT[Id, Throwable, X], CompileError, A]
+  type ErrorOr[A] =
+    EitherT[[X] =>> EitherT[Id, Throwable, X], CompileError[Json], A]
 
   def ensure[A](fa: ErrorOr[A])(err: => Nothing)(p: A => Boolean): Unit =
     fa.ensure(err)(p)
@@ -57,7 +58,7 @@ class CompilerImplTest extends munit.FunSuite {
   }
 
   test("Lambda application generation") {
-    val lambda = Expr.lambda(
+    val lambda = Expr.lambda[CompilerImpl.Value](
       body = Expr.ap(
         applied = Expr.ref(PathIdent.from("add")),
         args =

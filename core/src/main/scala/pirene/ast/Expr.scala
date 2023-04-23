@@ -8,29 +8,28 @@ import pirene.util.PathIdent
 
 import pirene.util.Ident
 import pirene.util.PathIdent
-type Expr = Fix[ExprF]
+
+type Expr[C] = Fix[[A] =>> ExprF[A, C]]
 
 object Expr {
 
-  def const(c: Constant): Expr = Fix(ExprF.Const(c))
+  def const[C](c: C): Expr[C] = Fix(ExprF.Const(c))
 
-  def bind(ident: Ident, term: Expr, in: Expr): Expr =
+  def bind[C](ident: Ident, term: Expr[C], in: Expr[C]): Expr[C] =
     Fix(ExprF.Bind(ident, term, in))
 
-  def ap(applied: Expr, args: List[Expr]): Expr =
+  def ap[C](applied: Expr[C], args: List[Expr[C]]): Expr[C] =
     Fix(ExprF.Apply(applied, args))
 
-  def ref(path: PathIdent): Expr = Fix(ExprF.Ref(path))
+  def ref[C](path: PathIdent): Expr[C] = Fix(ExprF.Ref(path))
 
-  def lambda(body: Expr, params: Ident*): Expr =
+  def lambda[C](body: Expr[C], params: Ident*): Expr[C] =
     Fix(ExprF.Lambda(params.toList, body))
 
 }
 
-type Constant = io.circe.Json
-
-enum ExprF[A] {
-  case Const(value: Constant)
+enum ExprF[A, C] {
+  case Const(value: C)
   case Bind(ident: Ident, term: A, in: A)
   case Apply(applied: A, args: List[A])
   case Lambda(params: List[Ident], body: A)
@@ -39,10 +38,10 @@ enum ExprF[A] {
 
 object ExprF {
 
-  given Functor[ExprF] = derived.functor
+  given [C]: Functor[[A] =>> ExprF[A, C]] = derived.functor
 
-  given Foldable[ExprF] = derived.foldable
+  given [C]: Foldable[[A] =>> ExprF[A, C]] = derived.foldable
 
-  given Traverse[ExprF] = derived.traverse
+  given [C]: Traverse[[A] =>> ExprF[A, C]] = derived.traverse
 
 }

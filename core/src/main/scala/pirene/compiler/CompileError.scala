@@ -6,8 +6,9 @@ import pirene.util.PathIdent
 import pirene.util.PathIdent
 import pirene.ast.Type
 import pirene.ast.Expr
-enum CompileError extends Exception {
+
+enum CompileError[C] extends Exception {
   case NotFoundType(ident: PathIdent)
   case NotFoundValue(ident: PathIdent)
-  case TypeMismatch(foundExpr: Expr, foundType: Type, requiredType: Type)
+  case TypeMismatch(foundExpr: Expr[C], foundType: Type, requiredType: Type)
 }

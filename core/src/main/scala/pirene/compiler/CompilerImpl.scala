@@ -10,30 +10,37 @@ import pirene.util.*
 
 import pirene.util.PathIdent
 import pirene.ast.{Expr, ExprF}
-class CompilerImpl[F[_]](using MonadError[F, CompileError])
+
+class CompilerImpl[F[_]](using MonadError[F, CompileError[CompilerImpl.Value]])
     extends CompilerAlgebra[F] {
 
-  override type Value = Json
+  override type Value = CompilerImpl.Value
 
-  override def compile(ctx: Context[ValueProgram], expr: Expr): ValueProgram =
-    CompilerImpl.compile(ctx, expr)
+  override def compile(
+      ctx: Context[ValueProgram],
+      expr: Expr[Value]
+  ): ValueProgram = CompilerImpl.compile(ctx, expr)
 
 }
 object CompilerImpl {
 
+  type Value = Json
+
   type ValueProgram[F[_]] = List[Json] => F[Json]
 
-  def compile[F[_]](ctx: Context[ValueProgram[F]], expr: Expr)(using
-      F: MonadError[F, CompileError]
+  def compile[F[_]](ctx: Context[ValueProgram[F]], expr: Expr[Json])(using
+      F: MonadError[F, CompileError[Value]]
   ): ValueProgram[F] = scheme.cata(CompilerImpl.compileAlg[F]).apply(expr)(ctx)
 
-  def compileAlg[F[_]](using F: MonadError[F, CompileError]) =
-    Algebra[ExprF, Context[ValueProgram[F]] => ValueProgram[F]] {
+  def compileAlg[F[_]](using F: MonadError[F, CompileError[Value]]) = {
+    type Acc = Context[ValueProgram[F]] => ValueProgram[F]
+
+    Algebra[[A] =>> ExprF[A, Value], Acc] {
       case ExprF.Const(c) => _ => _ => c.pure
       case ExprF.Bind(ident, term, in) =>
         ctx => in(Context.withDef(ctx, PathIdent.from(ident), term(ctx)))
       case ExprF.Apply(applied, args) =>
-        ctx => _ => args.traverse(_.apply(ctx)(Nil)).flatMap(applied(ctx)(_))
+        ctx => _ => args.traverse(_.apply(ctx)(Nil)).flatMap(applied(ctx))
       case ExprF.Ref(ref) =>
         ctx => { args =>
           Context
@@ -53,5 +60,6 @@ object CompilerImpl {
           expr(innerCtx)(args)
         }
     }
+  }
 
 }
