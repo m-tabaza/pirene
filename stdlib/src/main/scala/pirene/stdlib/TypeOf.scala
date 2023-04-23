@@ -22,6 +22,14 @@ object TypeOf {
     inline def get = Type.int
   }
 
+  given TypeOf[Float] with {
+    inline def get = Type.float
+  }
+
+  given TypeOf[Double] with {
+    inline def get = Type.float
+  }
+
   given TypeOf[String] with {
     inline def get = Type.string
   }
