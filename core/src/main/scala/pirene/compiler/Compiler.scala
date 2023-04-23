@@ -2,13 +2,11 @@ package pirene.compiler
 
 import pirene.ast.Expr
 
-trait CompilerAlgebra[F[_]] {
+trait Compiler[F[_]] {
 
   type Value
 
-  type Program[-I, O] = List[I] => F[O]
-
-  type ValueProgram = Program[Value, Value]
+  type ValueProgram = Program[F, Value]
 
   def compile(ctx: Context[ValueProgram], expr: Expr[Value]): ValueProgram
 
