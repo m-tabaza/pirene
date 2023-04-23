@@ -1,4 +1,4 @@
-package pirene.prelude
+package pirene.stdlib
 
 inline def funcDef[A](ident: String)(impl: A)(using ta: TypeOf[A]) =
   (ident, impl, ta.get)

@@ -19,13 +19,13 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     )
   )
 
-lazy val prelude = crossProject(JVMPlatform, JSPlatform)
+lazy val stdlib = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
-  .in(file("prelude"))
+  .in(file("stdlib"))
   .dependsOn(core)
   .settings(
-    moduleName := "pirene-prelude",
-    name := "Pirene Prelude",
+    moduleName := "pirene-stdlib",
+    name := "Pirene standard library",
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-core" % "0.23.14"
     )
@@ -70,4 +70,4 @@ lazy val client = project
     addCommandAlias("build", "fullOptJS/webpack")
   )
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
-  .dependsOn(core.js, prelude.js)
+  .dependsOn(core.js, stdlib.js)

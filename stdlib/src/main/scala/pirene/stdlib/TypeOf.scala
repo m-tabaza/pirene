@@ -1,4 +1,4 @@
-package pirene.prelude
+package pirene.stdlib
 
 import pirene.ast.Type
 import pirene.util.PathIdent
