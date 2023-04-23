@@ -2,6 +2,7 @@ package pirene.util
 
 import cats.Show
 import cats.data.NonEmptyList
+import cats.syntax.all.*
 
 opaque type PathIdent = NonEmptyList[String]
 object PathIdent {
@@ -18,9 +19,17 @@ object PathIdent {
 
   def path(ident: PathIdent): NonEmptyList[String] = ident
 
-  given Show[PathIdent] with {
-    def show(ident: PathIdent): String = PathIdent.toString(ident)
+  def parse(s: String): Option[PathIdent] = {
+    val trimmed = s.trim
+    if trimmed.isEmpty then None
+    else {
+      val fragments = s.trim.split(".")
+      if fragments.isEmpty then from(trimmed).some
+      else fragments.toList.toNel.nested.map(_.trim).value.map(from)
+    }
   }
+
+  given Show[PathIdent] = Show.show(toString)
 
 }
 
