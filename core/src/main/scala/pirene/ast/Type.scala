@@ -37,8 +37,8 @@ object Type {
       }
     )
 
-  def product(a: Type, b: Type, rest: Type*) =
-    Fix(TypeF.Product(OneAnd(a, NonEmptyList(b, rest.toList))))
+  def tuple(a: Type, b: Type, rest: Type*) =
+    Fix(TypeF.Tuple(OneAnd(a, NonEmptyList(b, rest.toList))))
 
   def record(head: (PathIdent, Type), tail: (PathIdent, Type)*): Type =
     Fix(TypeF.Record(NonEmptyList(head, tail.toList)))
@@ -81,7 +81,7 @@ enum TypeF[A] {
   case Boolean()
 
   /** `(String, Int, ...)` */
-  case Product(members: OneAnd[NonEmptyList, A])
+  case Tuple(members: OneAnd[NonEmptyList, A])
 
   /** `(a: Int, b: Int, ...)` */
   case Record(members: NonEmptyList[(PathIdent, A)])
