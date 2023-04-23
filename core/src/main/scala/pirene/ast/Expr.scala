@@ -3,11 +3,8 @@ package pirene.ast
 import cats.*
 import cats.derived.{semiauto => derived, _}
 import higherkindness.droste.data.Fix
-import pirene.util.Ident
 import pirene.util.PathIdent
-
 import pirene.util.Ident
-import pirene.util.PathIdent
 
 type Expr[C] = Fix[[A] =>> ExprF[A, C]]
 

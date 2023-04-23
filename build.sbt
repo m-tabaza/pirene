@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "3.3.0-RC4"
-ThisBuild / scalacOptions ++= Seq("-Xmax-inlines", "60")
+ThisBuild / scalacOptions ++= Seq("-Xmax-inlines", "60", "-Wunused:imports")
 ThisBuild / tlBaseVersion := "2.9"
 
 lazy val root = tlCrossRootProject.aggregate(core, client)

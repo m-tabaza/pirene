@@ -1,9 +1,7 @@
 package pirene.compiler
 
-import pirene.ast.*
 import pirene.util.PathIdent
 
-import pirene.util.PathIdent
 import pirene.ast.Type
 import pirene.ast.Expr
 

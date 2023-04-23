@@ -4,7 +4,6 @@ import cats.*
 import cats.data.NonEmptyList
 import cats.data.OneAnd
 import cats.derived.{semiauto => derived, _}
-import pirene.util.PathIdent
 import higherkindness.droste.data.Fix
 
 import pirene.util.PathIdent

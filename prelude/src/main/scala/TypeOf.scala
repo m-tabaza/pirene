@@ -1,11 +1,8 @@
 package pirene.prelude
 
-import cats.data.NonEmptyList
 import pirene.ast.Type
 import pirene.util.PathIdent
 
-import pirene.util.PathIdent
-import pirene.ast.Type
 trait TypeOf[A] {
   def get: Type
 }
