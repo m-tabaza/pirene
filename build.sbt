@@ -2,7 +2,7 @@ ThisBuild / scalaVersion := "3.3.0-RC4"
 ThisBuild / scalacOptions ++= Seq("-Xmax-inlines", "60", "-Wunused:imports")
 ThisBuild / tlBaseVersion := "2.9"
 
-lazy val root = tlCrossRootProject.aggregate(core, client)
+lazy val root = tlCrossRootProject.aggregate(core, stdlib)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -34,40 +34,14 @@ lazy val stdlib = crossProject(JVMPlatform, JSPlatform)
 lazy val client = project
   .settings(
     moduleName := "pirene-client",
-    name := "Pirene Client",
-    scalaJSUseMainModuleInitializer := true,
+    name := "Pirene UI",
     libraryDependencies ++= Seq(
-      "me.shadaj" %%% "slinky-web" % "0.7.2",
-      "me.shadaj" %%% "slinky-hot" % "0.7.2"
+      "com.github.japgolly.scalajs-react" %%% "core" % "2.1.1"
     ),
     Compile / npmDependencies ++= Seq(
       "react" -> "17.0.2",
-      "react-dom" -> "17.0.2",
-      "react-proxy" -> "1.1.8",
-      "file-loader" -> "6.2.0",
-      "style-loader" -> "2.0.0",
-      "css-loader" -> "5.2.7",
-      "html-webpack-plugin" -> "4.5.2",
-      "copy-webpack-plugin" -> "6.4.1",
-      "webpack-merge" -> "5.8.0"
-    ),
-    webpack / version := "4.44.2",
-    startWebpackDevServer / version := "3.11.2",
-    webpackResources := baseDirectory.value / "webpack" * "*",
-    fastOptJS / webpackConfigFile := Some(
-      baseDirectory.value / "webpack" / "webpack-fastopt.config.js"
-    ),
-    fullOptJS / webpackConfigFile := Some(
-      baseDirectory.value / "webpack" / "webpack-opt.config.js"
-    ),
-    Test / webpackConfigFile := Some(
-      baseDirectory.value / "webpack" / "webpack-core.config.js"
-    ),
-    fastOptJS / webpackDevServerExtraArgs := Seq("--inline", "--hot"),
-    fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
-    Test / requireJsDomEnv := true,
-    addCommandAlias("dev", ";fastOptJS/startWebpackDevServer;~fastOptJS"),
-    addCommandAlias("build", "fullOptJS/webpack")
+      "react-dom" -> "17.0.2"
+    )
   )
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .dependsOn(core.js, stdlib.js)
