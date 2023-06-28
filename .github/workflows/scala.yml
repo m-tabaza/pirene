@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  Build:
 
     runs-on: ubuntu-latest
 
@@ -22,8 +22,13 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: 'sbt'
+
+    - name: Compile
+      run: sbt compile
+
     - name: Run tests
       run: sbt test
+
       # For Dependabot
     - name: Upload dependency graph
       uses: scalacenter/sbt-dependency-submission@ab086b50c947c9774b70f39fc7f6e20ca2706c91
