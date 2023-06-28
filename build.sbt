@@ -27,7 +27,7 @@ lazy val stdlib = crossProject(JVMPlatform, JSPlatform)
     moduleName := "pirene-stdlib",
     name := "Pirene standard library",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-core" % "0.23.14"
+      "org.http4s" %% "http4s-core" % "0.23.22"
     )
   )
 
