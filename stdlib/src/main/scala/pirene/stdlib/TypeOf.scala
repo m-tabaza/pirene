@@ -2,6 +2,7 @@ package pirene.stdlib
 
 import pirene.ast.Type
 import pirene.util.PathIdent
+import cats.effect.kernel.Async
 
 trait TypeOf[A] {
   def get: Type
@@ -44,6 +45,14 @@ object TypeOf {
 
   given [A](using ta: TypeOf[A]): TypeOf[Vector[A]] with {
     inline def get = Type.ap(Type.ref(PathIdent.from("Array")), ta.get)
+  }
+
+  given [A](using ta: TypeOf[A]): TypeOf[Option[A]] with {
+    inline def get = Type.ap(Type.ref(PathIdent.from("Option")), ta.get)
+  }
+
+  given [A, F[_]](using ta: TypeOf[A])(using Async[F]): TypeOf[F[A]] with {
+    inline def get = Type.ap(Type.ref(PathIdent.from("IO")), ta.get)
   }
 
 }
